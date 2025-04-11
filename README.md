@@ -18,13 +18,13 @@ A Retrieval-Augmented Generation (RAG) API built with Llama 3.1 that ingests doc
 
 ## Getting Started
 
-### 1. Prepare the Model
+### 1. Get the Model
 
-The system uses Llama 3.1 (8B Instruct version). Download and quantize the model:
+# Create the models directory if it doesn't exist
+mkdir -p models
 
-```bash
-python main.py prepare-model
-```
+# Download the quantized model
+wget -O models/llama-3.1-8b-instruct-q4_k_m.gguf https://huggingface.co/modularai/Llama-3.1-8B-Instruct-GGUF/resolve/main/llama-3.1-8b-instruct-q4_k_m.gguf
 
 ### 2. Ingest Documents
 

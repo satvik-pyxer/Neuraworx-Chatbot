@@ -20,10 +20,10 @@ A Retrieval-Augmented Generation (RAG) API built with Llama 3.1 that ingests doc
 
 ### 1. Get the Model
 
-# Create the models directory if it doesn't exist
+#### Create the models directory if it doesn't exist
 mkdir -p models
 
-# Download the quantized model
+##### Download the quantized model
 wget -O models/llama-3.1-8b-instruct-q4_k_m.gguf https://huggingface.co/modularai/Llama-3.1-8B-Instruct-GGUF/resolve/main/llama-3.1-8b-instruct-q4_k_m.gguf
 
 ### 2. Ingest Documents

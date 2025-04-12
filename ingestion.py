@@ -23,7 +23,8 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = PROJECT_ROOT / "models/embeddings"
 
 SUPPORTED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"]
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_URL = "http://localhost:6333"
+QDRANT_DATA = PROJECT_ROOT / "qdrant_data"  # Local data directory for Docker volume
 
 # --- Loaders ---
 def load_txt(path):
@@ -115,11 +116,20 @@ def embed_chunks(chunks, model):
 
 # --- Qdrant Storage ---
 def get_qdrant_client():
-    """Get the Qdrant client."""
-    return QdrantClient(
-        url=QDRANT_URL,
-        api_key=os.getenv("QDRANT_API_KEY"),
-    )
+    """Get the Qdrant client connecting to Docker container."""
+    try:
+        client = QdrantClient(
+            url=QDRANT_URL,
+            timeout=5  # Short timeout to quickly detect if server is unavailable
+        )
+        # Test the connection 
+        client.get_collections()
+        print(f"Connected to Qdrant server at {QDRANT_URL}")
+        return client
+    except Exception as e:
+        print(f"Cannot connect to Qdrant server: {e}")
+        print("Please make sure the Qdrant Docker container is running.")
+        raise ConnectionError(f"Cannot connect to Qdrant at {QDRANT_URL}. Is Docker running?")
 
 def store_in_qdrant(chunks_with_metadata, embeddings, qdrant: QdrantClient):
     """Store chunks with metadata and embeddings in Qdrant."""
@@ -181,7 +191,7 @@ def ingest_file(file_path: Path, qdrant=None, embedder=None) -> int:
         return 0
 
 # --- Ingest Folder ---
-def ingest_folder(folder_path, qdrant_url=None, qdrant_api_key=None):
+def ingest_folder(folder_path, qdrant_url=None):
     """Ingest all supported files in a folder. Returns a summary of the ingestion."""
     
     folder_path = Path(folder_path).absolute()  # Ensure it's an absolute Path
@@ -190,12 +200,10 @@ def ingest_folder(folder_path, qdrant_url=None, qdrant_api_key=None):
     print(f"Ingesting documents from folder: {folder_path}")
     
     qdrant_url = qdrant_url or QDRANT_URL
-    qdrant_api_key = qdrant_api_key or os.getenv("QDRANT_API_KEY")
     
     embedder = get_embedder()
     qdrant = QdrantClient(
         url=qdrant_url,
-        api_key=qdrant_api_key,
     )
 
     total_files = 0

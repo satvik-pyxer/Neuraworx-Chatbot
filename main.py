@@ -2,7 +2,10 @@ import os
 import argparse
 import logging
 import sys
+import subprocess
+import requests
 from pathlib import Path
+import time
 
 from ingestion import ingest_folder
 from model import get_llm, QUANTIZED_MODEL_PATH, MODEL_DIR
@@ -14,24 +17,83 @@ logger = logging.getLogger(__name__)
 # Get the absolute path to the project root directory
 PROJECT_ROOT = Path(__file__).parent.absolute()
 DOCUMENTS_DIR = PROJECT_ROOT / "documents"
+QDRANT_DATA = PROJECT_ROOT / "qdrant_data"  # Local data directory for Docker volume
+QDRANT_URL = "http://localhost:6333"  # Qdrant API URL
 
 def setup_environment():
     """Set up the environment and directories."""
     # Ensure directories exist
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     DOCUMENTS_DIR.mkdir(parents=True, exist_ok=True)
+    QDRANT_DATA.mkdir(parents=True, exist_ok=True)
     
     # Log paths for debugging
     logger.info(f"Project root: {PROJECT_ROOT}")
     logger.info(f"Model directory: {MODEL_DIR}")
     logger.info(f"Documents directory: {DOCUMENTS_DIR}")
+    logger.info(f"Qdrant data directory: {QDRANT_DATA}")
     
     # Make sure the project root is in the Python path
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(PROJECT_ROOT))
     
-    # Set up Qdrant URL
-    os.environ.setdefault("QDRANT_URL", "http://localhost:6333")
+    # Ensure Qdrant is running
+    ensure_qdrant_container()
+    return True
+
+def ensure_qdrant_container():
+    """Make sure Qdrant container is running."""
+    # Check if container exists and is running
+    result = subprocess.run(
+        ["docker", "ps", "-f", "name=qdrant", "--format", "{{.Names}}"],
+        capture_output=True, text=True
+    )
+    
+    if "qdrant" in result.stdout:
+        logger.info("Qdrant container is already running")
+        return True
+    
+    # Check if container exists but is stopped
+    result = subprocess.run(
+        ["docker", "ps", "-a", "-f", "name=qdrant", "--format", "{{.Names}}"],
+        capture_output=True, text=True
+    )
+    
+    if "qdrant" in result.stdout:
+        # Container exists but is stopped, start it
+        logger.info("Starting existing Qdrant container...")
+        subprocess.run(["docker", "start", "qdrant"], check=False)
+    else:
+        # Container doesn't exist, create and start it
+        logger.info("Creating new Qdrant container...")
+        data_dir = str(QDRANT_DATA.absolute())
+        subprocess.run(
+            [
+                "docker", "run", "-d",
+                "--name", "qdrant",
+                "-p", "6333:6333", "-p", "6334:6334",
+                "-v", f"{data_dir}:/qdrant/storage",
+                "qdrant/qdrant"
+            ],
+            check=False
+        )
+    
+    # Wait for Qdrant to be ready (up to 30 seconds)
+    logger.info("Waiting for Qdrant to be ready...")
+    for i in range(30):
+        try:
+            response = requests.get(f"{QDRANT_URL}/collections", timeout=2)
+            if response.status_code == 200:
+                logger.info(f"Qdrant is ready after {i+1} seconds")
+                return True
+        except:
+            pass
+        
+        time.sleep(1)
+    
+    logger.warning("Qdrant container started but API not responding within timeout")
+    # Continue anyway, as it might become available later
+    return True
 
 def check_model():
     """Check if the pre-quantized model exists."""

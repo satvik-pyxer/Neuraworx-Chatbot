@@ -129,7 +129,7 @@ Important factors:
 - Information quality (0-20 points)
 - Content freshness (0-10 points)
 
-Your rating should be a single number (1-100) with no explanation.
+Your rating should strictly be a single number (1-100) with no explanation.
 <|im_end|>
 
 <|im_start|>assistant

@@ -75,14 +75,19 @@ class LLMWrapper:
                     temperature=temperature,
                     **kwargs
                 )
-                return result["choices"][0]["text"]
+                raw_text = result["choices"][0]["text"]
             else:  # ctransformers interface
-                return self.model(
+                raw_text = self.model(
                     formatted_prompt,
                     max_new_tokens=max_tokens,
                     temperature=temperature,
                     **kwargs
                 )
+            
+            # Clean up the response by removing special tokens and formatting artifacts
+            cleaned_text = self._clean_model_output(raw_text)
+            return cleaned_text
+            
         except Exception as e:
             logger.error(f"Error during generation: {e}")
             return f"Error generating response: {str(e)}"
@@ -98,13 +103,36 @@ class LLMWrapper:
         formatted_prompt += f"<|im_start|>user\n{prompt}\n<|im_end|>\n"
         formatted_prompt += "<|im_start|>assistant\n"
         return formatted_prompt
+        
+    def _clean_model_output(self, text: str) -> str:
+        """Clean up the model's output by removing special tokens and formatting artifacts."""
+        # Remove any trailing special tokens
+        if "<|im_end|>" in text:
+            text = text.split("<|im_end|>")[0]
+            
+        # Remove any repeated assistant tokens that might appear in the output
+        text = text.replace("<|im_start|>assistant", "")
+        
+        # Remove any other special tokens that might be in the output
+        text = text.replace("<|im_start|>", "")
+        text = text.replace("<|im_end|>", "")
+        
+        # Clean up any repeated newlines
+        while "\n\n\n" in text:
+            text = text.replace("\n\n\n", "\n\n")
+            
+        # Trim whitespace
+        text = text.strip()
+        
+        return text
 
 # Singleton instance for the LLM
 _llm_instance = None
+_current_model_path = None
 
 def get_llm() -> LLMWrapper:
     """Get or initialize the LLM instance."""
-    global _llm_instance
+    global _llm_instance, _current_model_path
     
     if _llm_instance is None:
         # Ensure model directory exists
@@ -121,7 +149,9 @@ def get_llm() -> LLMWrapper:
             gguf_files = list(MODEL_DIR.glob("*.gguf"))
             if gguf_files:
                 logger.info(f"Found existing GGUF model: {gguf_files[0]}")
-                _llm_instance = LLMWrapper(str(gguf_files[0]))
+                model_path = str(gguf_files[0])
+                _llm_instance = LLMWrapper(model_path)
+                _current_model_path = model_path
                 return _llm_instance
             else:
                 raise FileNotFoundError(
@@ -130,9 +160,34 @@ def get_llm() -> LLMWrapper:
                 )
         
         # Load the model
-        _llm_instance = LLMWrapper(str(QUANTIZED_MODEL_PATH))
+        model_path = str(QUANTIZED_MODEL_PATH)
+        _llm_instance = LLMWrapper(model_path)
+        _current_model_path = model_path
     
     return _llm_instance
+
+def reload_llm(model_filename: str) -> None:
+    """Reload the LLM with a different model."""
+    global _llm_instance, _current_model_path
+    
+    model_path = str(MODEL_DIR / model_filename)
+    
+    # If the model is already loaded, do nothing
+    if _current_model_path == model_path:
+        logger.info(f"Model {model_filename} is already loaded")
+        return
+    
+    logger.info(f"Reloading LLM with model: {model_filename}")
+    
+    # Delete the old instance to free up memory
+    if _llm_instance is not None:
+        del _llm_instance
+    
+    # Create a new instance with the new model
+    _llm_instance = LLMWrapper(model_path)
+    _current_model_path = model_path
+    logger.info(f"Model reloaded successfully: {model_filename}")
+
 
 def check_dependencies():
     """Check if necessary dependencies are installed."""

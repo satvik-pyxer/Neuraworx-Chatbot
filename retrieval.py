@@ -25,22 +25,18 @@ def optimize_query(query: str, chat_history: List[Dict[str, str]] = None) -> str
     llm = get_llm()
     
     # Prepare the prompt - updated format for Llama 3.1
-    prompt = f"""<|im_start|>system
+    prompt = f"""
 You are an AI assistant optimizing search queries for a RAG system.
 Given the following chat history and the most recent user query, rewrite the query to be more effective for vector retrieval.
 The optimized query should be standalone and capture the full context of what the user is asking about based on the conversation history.
-<|im_end|>
 
-<|im_start|>user
 CHAT HISTORY:
 {format_chat_history(chat_history)}
 
 MOST RECENT QUERY: {query}
 
 OPTIMIZED QUERY (respond with the optimized query only, no additional text):
-<|im_end|>
 
-<|im_start|>assistant
 """
     
     # Get the optimized query from the LLM
@@ -115,11 +111,9 @@ def rerank_chunks(query: str, chunks: List[Dict[str, Any]]) -> List[Dict[str, An
     llm = get_llm()
     
     # Prepare scoring prompt - updated format for Llama 3.1
-    base_prompt = f"""<|im_start|>system
+    base_prompt = f"""
 You are an AI assistant evaluating the relevance of text chunks for a query.
-<|im_end|>
 
-<|im_start|>user
 QUERY: {query}
 
 Rate each chunk on a scale of 1-100 based on how relevant and useful it is for answering the query.
@@ -130,9 +124,8 @@ Important factors:
 - Content freshness (0-10 points)
 
 Your rating should strictly be a single number (1-100) with no explanation.
-<|im_end|>
 
-<|im_start|>assistant
+YOUR RATING:
 """
     
     # Score each chunk
@@ -177,7 +170,6 @@ def generate_answer(query: str, chunks: List[Dict[str, Any]], chat_history: List
     
     # Prepare the prompt - updated format for Llama 3.1
     prompt = f"""
-<|im_start|>system
 You are a helpful AI assistant answering questions based on retrieved information.
 Guidelines:
 
@@ -187,15 +179,16 @@ Guidelines:
 4. If the retrieved information doesn't contain the answer, clearly state that you don't have enough information to answer the question
 5. Never fabricate information or make assumptions beyond what's explicitly stated in the retrieved text
 6. Focus solely on answering what was asked without unnecessary explanations about your sourcing
-<|im_end|>
 
-<|im_start|>user
+HISTORY:
 {history_context}
+
 RETRIEVED INFORMATION:
 {chunk_context}
+
 USER QUERY: {query}
-<|im_end|>
-<|im_start|>assistant
+
+YOUR ANSWER:
 """
     
     # Generate the answer

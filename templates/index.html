@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraWorx DocSight</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjZGRiIgZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3bC0xMC01ek0xMiA0LjRsNi4yIDMuMUwxMiAxMC42IDUuOCA3LjVsMy4xLTEuNiA2LjItMy4xek00IDguN2w3IDMuNXY3LjFsLTctMy41VjguN3ptOSAzLjVsNy0zLjV2Ny4xbC03IDMuNXYtNy4xeiIvPjwvc3ZnPg==">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg mb-4">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-bold text-blue-600">NeuraWorx DocSight</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-blue-500 text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" aria-current="page">Home</a>
+                        <a href="/admin" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Admin</a>
+                        <a href="/profile" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Profile</a>
+                        <a href="/help" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto px-4 py-4 h-screen flex flex-col">
+        <div class="flex flex-1 gap-4 overflow-hidden relative h-[calc(100vh-8rem)]">
+            <style>
+                .section-height {
+                    height: calc(100vh - 8rem);
+                }
+            </style>
+            <!-- Toggle Button for Document Pane -->
+            <button id="toggleDocumentPane" class="fixed left-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-br from-white to-gray-50 rounded-full p-3 shadow-lg z-20 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out group border border-gray-200">
+                <svg class="w-6 h-6 text-blue-600 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="sr-only">Toggle Document Panel</span>
+            </button>
+
+            <!-- Document Section (Left Pane) -->
+            <div id="documentPane" class="w-1/4 bg-white rounded-lg shadow p-4 flex flex-col overflow-hidden transition-all duration-300 ease-in-out section-height">
+                <h2 class="text-xl font-semibold mb-4">Documents</h2>
+                
+                <!-- Upload Section -->
+                <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <input type="file" id="documentFile" name="file" accept=".pdf,.txt,.md,.docx" class="hidden">
+                        <label for="documentFile" class="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-indigo-600 transition-colors inline-block shadow-sm">
+                            Upload Document
+                        </label>
+                        <span id="fileName" class="mt-2 block text-sm text-gray-600"></span>
+                        <div id="uploadStatus" class="mt-2 hidden">
+                            <div class="flex items-center">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
+                                <span class="text-sm text-gray-600">Uploading...</span>
+                            </div>
+                        </div>
+                        <div id="uploadSuccess" class="mt-2 hidden text-sm text-green-600"></div>
+                        <div id="uploadError" class="mt-2 hidden text-sm text-red-600"></div>
+                    </form>
+                </div>
+
+                <!-- Document List -->
+                <div id="documentList" class="flex-1 overflow-y-auto space-y-2">
+                    <p class="text-gray-500 italic">No documents uploaded yet</p>
+                </div>
+            </div>
+
+            <!-- Chat Section (Middle Pane) -->
+            <div class="flex-1 bg-white rounded-lg shadow p-4 flex flex-col overflow-hidden relative section-height">
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto mb-4" id="chatMessages">
+                    <div class="p-4 bg-blue-50 rounded-lg mb-4 border border-blue-100">
+                        <h3 class="font-medium text-blue-800">Welcome to NeuraWorx DocSight</h3>
+                        <p class="text-blue-700 mt-1">Upload a document and ask questions about its content. I'll use AI to find the most relevant information.</p>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div id="progressBar" class="hidden h-1 mb-4 bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                
+                <!-- Question Input -->
+                <div class="mt-auto">
+                    <form id="questionForm" class="flex items-center space-x-2" onsubmit="return false;">
+                        <textarea id="questionInput" placeholder="Ask a question about your documents..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-12 transition-all duration-200" rows="1"></textarea>
+                        <button id="askButton" type="button" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-colors shadow-sm flex items-center justify-center min-w-[80px] h-12">
+                            <div class="flex items-center">
+                                <div class="loading-spinner hidden animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                <span class="ask-text font-medium">Ask</span>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Toggle Button for History Pane -->
+            <button id="toggleHistoryPane" class="fixed right-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-br from-white to-gray-50 rounded-full p-3 shadow-lg z-20 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out group border border-gray-200">
+                <svg class="w-6 h-6 text-blue-600 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span class="sr-only">Toggle History Panel</span>
+            </button>
+
+            <!-- History Section (Right Pane) -->
+            <div id="historyPane" class="w-1/4 bg-white rounded-lg shadow p-4 flex flex-col overflow-hidden transition-all duration-300 ease-in-out section-height">
+                <h2 class="text-xl font-semibold mb-4">History</h2>
+                <div id="historyContent" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                    <style>
+                        /* Webkit scrollbar styles */
+                        #historyContent::-webkit-scrollbar {
+                            width: 6px;
+                        }
+                        
+                        #historyContent::-webkit-scrollbar-track {
+                            background: #f1f1f1;
+                            border-radius: 10px;
+                        }
+                        
+                        #historyContent::-webkit-scrollbar-thumb {
+                            background: #c0c0c0;
+                            border-radius: 10px;
+                        }
+                        
+                        #historyContent::-webkit-scrollbar-thumb:hover {
+                            background: #a0a0a0;
+                        }
+                        
+                        /* Firefox scrollbar styles */
+                        #historyContent {
+                            scrollbar-width: thin;
+                            scrollbar-color: #c0c0c0 #f1f1f1;
+                        }
+                    </style>
+                    <!-- Conversation history will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM Content Loaded');
+                // Keep track of uploaded documents
+                let documents = {};
+                let chatHistory = [];
+
+                // DOM Elements
+                const documentPane = document.getElementById('documentPane');
+                const historyPane = document.getElementById('historyPane');
+                const toggleDocumentPane = document.getElementById('toggleDocumentPane');
+                const toggleHistoryPane = document.getElementById('toggleHistoryPane');
+                const documentFile = document.getElementById('documentFile');
+                const fileName = document.getElementById('fileName');
+                const uploadForm = document.getElementById('uploadForm');
+                const uploadStatus = document.getElementById('uploadStatus');
+                const uploadSuccess = document.getElementById('uploadSuccess');
+                const uploadError = document.getElementById('uploadError');
+                const documentList = document.getElementById('documentList');
+                const questionInput = document.getElementById('questionInput');
+                const questionForm = document.getElementById('questionForm');
+                const askButton = document.getElementById('askButton');
+                const chatMessages = document.getElementById('chatMessages');
+                const historyContent = document.getElementById('historyContent');
+                const progressBar = document.getElementById('progressBar');
+
+                // Toggle document pane
+                toggleDocumentPane.addEventListener('click', () => {
+                    documentPane.classList.toggle('w-0');
+                    documentPane.classList.toggle('w-1/4');
+                    documentPane.classList.toggle('opacity-0');
+                    documentPane.classList.toggle('p-0');
+                });
+
+                // Toggle history pane
+                toggleHistoryPane.addEventListener('click', () => {
+                    historyPane.classList.toggle('w-0');
+                    historyPane.classList.toggle('w-1/4');
+                    historyPane.classList.toggle('opacity-0');
+                    historyPane.classList.toggle('p-0');
+                });
+
+                // File upload handling
+                documentFile.addEventListener('change', () => {
+                    if (documentFile.files.length > 0) {
+                        fileName.textContent = documentFile.files[0].name;
+                        uploadDocument();
+                    }
+                });
+
+                // Upload document function
+                async function uploadDocument() {
+                    if (!documentFile.files.length) return;
+                    
+                    const formData = new FormData();
+                    formData.append('file', documentFile.files[0]);
+                    
+                    // Reset status elements
+                    uploadStatus.classList.remove('hidden');
+                    uploadSuccess.classList.add('hidden');
+                    uploadError.classList.add('hidden');
+                    
+                    try {
+                        const response = await fetch('/ingest/file', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            throw new Error(data.detail || 'Error uploading document');
+                        }
+                        
+                        uploadSuccess.textContent = `Successfully uploaded ${documentFile.files[0].name}`;
+                        uploadSuccess.classList.remove('hidden');
+                        
+                        // Update document list
+                        fetchDocuments();
+                        
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        uploadError.textContent = error.message || 'Error uploading document';
+                        uploadError.classList.remove('hidden');
+                    } finally {
+                        uploadStatus.classList.add('hidden');
+                    }
+                }
+
+                // WebSocket for real-time document updates
+                let socket;
+                
+                function connectWebSocket() {
+                    // Close any existing connection
+                    if (socket) {
+                        socket.close();
+                    }
+                    
+                    // Create a new WebSocket connection
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const wsUrl = `${protocol}//${window.location.host}/ws/documents`;
+                    
+                    socket = new WebSocket(wsUrl);
+                    
+                    socket.onopen = function(e) {
+                        console.log('WebSocket connection established');
+                    };
+                    
+                    socket.onmessage = function(event) {
+                        const data = JSON.parse(event.data);
+                        console.log('WebSocket message received:', data);
+                        
+                        // Handle different message types
+                        if (data.type === 'document_added' || data.type === 'document_removed') {
+                            // Refresh document list when documents change
+                            fetchDocuments();
+                            
+                            // Show notification to user
+                            const message = data.type === 'document_added' 
+                                ? `Document added: ${data.filename}` 
+                                : `Document removed: ${data.filename}`;
+                            
+                            showNotification(message, data.type === 'document_added' ? 'success' : 'info');
+                        }
+                    };
+                    
+                    socket.onclose = function(event) {
+                        console.log('WebSocket connection closed');
+                        // Try to reconnect after a delay
+                        setTimeout(connectWebSocket, 5000);
+                    };
+                    
+                    socket.onerror = function(error) {
+                        console.error('WebSocket error:', error);
+                    };
+                }
+                
+                // Show notification function
+                function showNotification(message, type = 'info') {
+                    const notification = document.createElement('div');
+                    notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-500 z-50 ${
+                        type === 'success' ? 'bg-green-100 text-green-800 border-green-300' :
+                        type === 'error' ? 'bg-red-100 text-red-800 border-red-300' :
+                        'bg-blue-100 text-blue-800 border-blue-300'
+                    }`;
+                    notification.innerHTML = message;
+                    document.body.appendChild(notification);
+                    
+                    // Remove notification after 5 seconds
+                    setTimeout(() => {
+                        notification.classList.add('opacity-0');
+                        setTimeout(() => notification.remove(), 500);
+                    }, 5000);
+                }
+                
+                // Fetch chat history from the backend
+                async function fetchChatHistory() {
+                    try {
+                        const response = await fetch('/chat/history');
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch chat history');
+                        }
+                        
+                        const data = await response.json();
+                        chatHistory = data.history || [];
+                        
+                        // Update history UI
+                        updateHistoryUI();
+                        
+                    } catch (error) {
+                        console.error('Error fetching chat history:', error);
+                    }
+                }
+                
+                // Update history UI
+                function updateHistoryUI() {
+                    const historyContent = document.getElementById('historyContent');
+                    historyContent.innerHTML = '';
+                    
+                    if (chatHistory.length === 0) {
+                        historyContent.innerHTML = '<p class="text-gray-500 italic">No conversation history yet</p>';
+                        return;
+                    }
+                    
+                    // Sort history by timestamp (newest first)
+                    const sortedHistory = [...chatHistory].sort((a, b) => {
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                    });
+                    
+                    // Add each history item to the UI
+                    sortedHistory.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'bg-gray-50 rounded-lg p-3 mb-3';
+                        historyItem.innerHTML = `
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="font-medium text-gray-800 line-clamp-1">${item.question}</p>
+                                <button class="text-gray-400 hover:text-red-500" data-id="${item.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="prose prose-sm text-gray-600 line-clamp-2">${item.answer}</div>
+                            <div class="text-xs text-gray-400 mt-1">${new Date(item.timestamp).toLocaleString()}</div>
+                        `;
+                        
+                        // Add event listener to delete button
+                        const deleteBtn = historyItem.querySelector('button');
+                        deleteBtn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            await deleteChatHistoryItem(item.id);
+                        });
+                        
+                        // Add event listener to reload the conversation
+                        historyItem.addEventListener('click', () => {
+                            // Clear current chat messages
+                            chatMessages.innerHTML = '';
+                            
+                            // Add the history item to the chat display
+                            addMessageToChat(item.question, item.answer, item.sources || []);
+                            
+                            // Set the question in the input field for easy follow-up
+                            questionInput.value = '';
+                            questionInput.focus();
+                        });
+                        
+                        historyContent.appendChild(historyItem);
+                    });
+                }
+                
+                // Format chat history for API
+                function formatChatHistoryForAPI() {
+                    // Convert our chat history format to the format expected by the API
+                    // The API expects a list of {role: string, content: string} objects
+                    const formattedHistory = [];
+                    
+                    // Get the last few messages to use as context
+                    const recentHistory = [...chatHistory].sort((a, b) => {
+                        return new Date(a.timestamp) - new Date(b.timestamp);
+                    }).slice(-5); // Use last 5 messages
+                    
+                    // For each history item, add a user message and an assistant message
+                    recentHistory.forEach(item => {
+                        formattedHistory.push({
+                            role: 'user',
+                            content: item.question
+                        });
+                        
+                        formattedHistory.push({
+                            role: 'assistant',
+                            content: item.answer
+                        });
+                    });
+                    
+                    return formattedHistory;
+                }
+                
+                // Delete a chat history item
+                async function deleteChatHistoryItem(id) {
+                    try {
+                        const response = await fetch(`/chat/history/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to delete history item');
+                        }
+                        
+                        // Refresh history
+                        fetchChatHistory();
+                        showNotification('History item deleted', 'success');
+                        
+                    } catch (error) {
+                        console.error('Error deleting history item:', error);
+                        showNotification('Error deleting history item', 'error');
+                    }
+                }
+                
+                // Fetch documents function
+                async function fetchDocuments() {
+                    try {
+                        // This endpoint would need to be implemented on the backend
+                        const response = await fetch('/documents');
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch documents');
+                        }
+                        
+                        const data = await response.json();
+                        documents = data;
+                        
+                        // Update document list UI
+                        updateDocumentList();
+                        
+                    } catch (error) {
+                        console.error('Error fetching documents:', error);
+                    }
+                }
+
+                // Update document list in UI
+                function updateDocumentList() {
+                    documentList.innerHTML = '';
+                    
+                    if (Object.keys(documents).length === 0) {
+                        documentList.innerHTML = '<p class="text-gray-500 italic">No documents uploaded yet</p>';
+                        return;
+                    }
+                    
+                    for (const [id, doc] of Object.entries(documents)) {
+                        const docElement = document.createElement('div');
+                        docElement.className = 'p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer flex justify-between items-center';
+                        docElement.innerHTML = `
+                            <div>
+                                <p class="font-medium text-gray-800">${doc.filename}</p>
+                                <p class="text-xs text-gray-500">Chunks: ${doc.chunks || 'N/A'}</p>
+                            </div>
+                        `;
+                        
+                        docElement.addEventListener('click', () => {
+                            // Select this document for querying
+                            selectDocument(id);
+                        });
+                        
+                        documentList.appendChild(docElement);
+                    }
+                }
+
+                // Select document for querying
+                function selectDocument(id) {
+                    // Visual indication of selection
+                    document.querySelectorAll('#documentList > div').forEach(el => {
+                        el.classList.remove('bg-blue-50', 'border-blue-200', 'border');
+                        el.classList.add('bg-gray-50');
+                    });
+                    
+                    const selectedElement = document.querySelector(`#documentList > div:nth-child(${Array.from(documentList.children).findIndex(el => el.dataset.id === id) + 1})`);
+                    if (selectedElement) {
+                        selectedElement.classList.remove('bg-gray-50');
+                        selectedElement.classList.add('bg-blue-50', 'border-blue-200', 'border');
+                    }
+                    
+                    // Store selected document ID
+                    localStorage.setItem('selectedDocument', id);
+                }
+
+                // Handle question submission
+                askButton.addEventListener('click', askQuestion);
+                questionInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        askQuestion();
+                    }
+                });
+
+                // Add message to chat
+                function addMessageToChat(question, answer, sources = []) {
+                    // User message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'p-3 bg-blue-50 rounded-lg mb-4 border border-blue-100';
+                    userMessage.innerHTML = `
+                        <p class="font-medium text-blue-800">You</p>
+                        <p class="text-gray-800">${question}</p>
+                    `;
+                    chatMessages.appendChild(userMessage);
+                    
+                    // AI message
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'p-3 bg-gray-50 rounded-lg mb-4 border border-gray-200';
+                    
+                    // Convert markdown to HTML
+                    const formattedAnswer = marked.parse(answer);
+                    
+                    aiMessage.innerHTML = `
+                        <p class="font-medium text-indigo-800">AI Assistant</p>
+                        <div class="prose prose-sm mt-1">${formattedAnswer}</div>
+                    `;
+                    
+                    // Add sources if available
+                    if (sources && sources.length > 0) {
+                        const sourcesElement = document.createElement('div');
+                        sourcesElement.className = 'mt-3 pt-2 border-t border-gray-200';
+                        sourcesElement.innerHTML = `
+                            <p class="text-xs font-medium text-gray-500 mb-1">Sources:</p>
+                            <div class="text-xs text-gray-600 space-y-1">
+                                ${sources.map(source => `
+                                    <div class="bg-gray-100 p-2 rounded">
+                                        <p class="font-medium">${source.filename}</p>
+                                        <p class="text-xs line-clamp-2">${source.text.substring(0, 150)}${source.text.length > 150 ? '...' : ''}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                        aiMessage.appendChild(sourcesElement);
+                    }
+                    
+                    chatMessages.appendChild(aiMessage);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                // Add to history
+                function addToHistory(question, answer) {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer';
+                    historyItem.innerHTML = `
+                        <p class="font-medium text-gray-800 line-clamp-1">${question}</p>
+                        <p class="text-xs text-gray-500 line-clamp-2">${answer.substring(0, 100)}${answer.length > 100 ? '...' : ''}</p>
+                    `;
+                    
+                    historyItem.addEventListener('click', () => {
+                        // Re-add this Q&A to the chat
+                        addMessageToChat(question, answer);
+                    });
+                    
+                    historyContent.prepend(historyItem);
+                    
+                    // Add to chat history array
+                    chatHistory.push({ role: 'user', content: question });
+                    chatHistory.push({ role: 'assistant', content: answer });
+                    
+                    // Limit history length
+                    if (chatHistory.length > 20) {
+                        chatHistory = chatHistory.slice(chatHistory.length - 20);
+                    }
+                }
+
+                async function askQuestion() {
+                    const question = questionInput.value.trim();
+                    if (!question) {
+                        alert('Please enter a question');
+                        return;
+                    }
+                    
+                    // Disable input and show loading state
+                    questionInput.disabled = true;
+                    askButton.disabled = true;
+                    
+                    // Show loading spinner
+                    const spinner = askButton.querySelector('.loading-spinner');
+                    const askText = askButton.querySelector('.ask-text');
+                    if (spinner && askText) {
+                        spinner.classList.remove('hidden');
+                        askText.textContent = 'Processing...';
+                    }
+                    
+                    // Show progress bar
+                    if (progressBar) {
+                        progressBar.classList.remove('hidden');
+                        progressBar.style.width = '60%';
+                    }
+                    
+                    try {
+                        const response = await fetch('/query', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                query: question,
+                                chat_history: formatChatHistoryForAPI()
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || 'Error processing question');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        // Add to chat and history
+                        addMessageToChat(question, data.answer, data.sources);
+                        
+                        // Refresh chat history from the server
+                        // This ensures we're showing the history that's saved in chat_history.json
+                        fetchChatHistory();
+                        
+                        // Reset input
+                        questionInput.value = '';
+                        questionInput.style.height = '48px';
+                        
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert(error.message || 'Error processing your question');
+                    } finally {
+                        // Re-enable input and reset UI
+                        questionInput.disabled = false;
+                        askButton.disabled = false;
+                        
+                        // Hide loading spinner and reset text
+                        if (spinner && askText) {
+                            spinner.classList.add('hidden');
+                            askText.textContent = 'Ask';
+                        }
+                        
+                        // Hide progress bar
+                        if (progressBar) {
+                            progressBar.style.width = '0%';
+                            progressBar.classList.add('hidden');
+                        }
+                    }
+                }
+
+                // Auto-resize textarea
+                questionInput.addEventListener('input', function() {
+                    this.style.height = '48px';
+                    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+                });
+
+                // Initialize
+                fetchDocuments();
+                fetchChatHistory();
+            });
+            
+            // Set up markdown options
+            marked.setOptions({
+                breaks: true,
+                gfm: true
+            });
+
+            // Add custom styles and animations
+            const style = document.createElement('style');
+            style.textContent = `
+                /* Message Styles */
+                .message-user {
+                    background: linear-gradient(to right, rgb(239 246 255), rgb(243 244 246));
+                    border: 1px solid rgb(191 219 254);
+                }
+                
+                .message-ai {
+                    background: linear-gradient(to right, rgb(243 244 246), rgb(249 250 251));
+                    border: 1px solid rgb(229 231 235);
+                }
+                
+                /* Animations */
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                #chatMessages > div {
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+                
+                /* Code block styling */
+                pre {
+                    background: rgb(67 56 202 / 0.05);
+                    padding: 1em;
+                    border-radius: 0.5em;
+                    margin: 1em 0;
+                    overflow-x: auto;
+                }
+                
+                code {
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                    font-size: 0.9em;
+                }
+                
+                /* Line clamping */
+                .line-clamp-1 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                
+                .line-clamp-2 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            `;
+            document.head.appendChild(style);
+        </script>
+    </div>
+</body>
+</html>

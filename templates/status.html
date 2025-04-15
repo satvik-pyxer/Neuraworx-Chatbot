@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - NeuraWorx DocSight</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjZGRiIgZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3bC0xMC01ek0xMiA0LjRsNi4yIDMuMUwxMiAxMC42IDUuOCA3LjVsMy4xLTEuNiA2LjItMy4xek00IDguN2w3IDMuNXY3LjFsLTctMy41VjguN3ptOSAzLjVsNy0zLjV2Ny4xbC03IDMuNXYtNy4xeiIvPjwvc3ZnPg==">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg mb-4">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-bold text-blue-600">NeuraWorx DocSight</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="/health" class="border-blue-500 text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" aria-current="page">Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">System Status</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">System Health</h2>
+                <div id="systemStatus" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div id="apiStatus" class="w-4 h-4 rounded-full bg-gray-300 mr-2"></div>
+                            <h3 class="font-medium">API Status</h3>
+                        </div>
+                        <p id="apiStatusText" class="text-sm text-gray-600 mt-1">Checking...</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div id="modelStatus" class="w-4 h-4 rounded-full bg-gray-300 mr-2"></div>
+                            <h3 class="font-medium">Model Status</h3>
+                        </div>
+                        <p id="modelStatusText" class="text-sm text-gray-600 mt-1">Checking...</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div id="databaseStatus" class="w-4 h-4 rounded-full bg-gray-300 mr-2"></div>
+                            <h3 class="font-medium">Database Status</h3>
+                        </div>
+                        <p id="databaseStatusText" class="text-sm text-gray-600 mt-1">Checking...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Documents</h2>
+                <div id="documentStats" class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Total Documents:</span>
+                        <span id="totalDocuments" class="font-medium">Loading...</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Total Chunks:</span>
+                        <span id="totalChunks" class="font-medium">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Filename</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chunks</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Added</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentTable">
+                            <tr>
+                                <td colspan="4" class="py-4 px-4 text-center text-gray-500">Loading documents...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Model Information</h2>
+                <div id="modelInfo" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-medium">Model Type</h3>
+                        <p id="modelType" class="text-sm text-gray-600 mt-1">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch system health status
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                // Update system status indicators
+                updateStatusIndicator('apiStatus', 'apiStatusText', true, 'Online');
+                updateStatusIndicator('modelStatus', 'modelStatusText', data.model_loaded, 
+                    data.model_loaded ? 'Loaded' : 'Not Loaded');
+                updateStatusIndicator('databaseStatus', 'databaseStatusText', data.database_connected, 
+                    data.database_connected ? 'Connected' : 'Not Connected');
+                
+                // Update model info
+                document.getElementById('modelType').textContent = data.model_type || 'Unknown';
+                
+            } catch (error) {
+                console.error('Error fetching health status:', error);
+                updateStatusIndicator('apiStatus', 'apiStatusText', false, 'Error');
+                updateStatusIndicator('modelStatus', 'modelStatusText', false, 'Unknown');
+                updateStatusIndicator('databaseStatus', 'databaseStatusText', false, 'Unknown');
+            }
+            
+            // Fetch document statistics
+            try {
+                const response = await fetch('/documents');
+                const documents = await response.json();
+                
+                // Update document stats
+                const totalDocs = Object.keys(documents).length;
+                let totalChunks = 0;
+                
+                document.getElementById('totalDocuments').textContent = totalDocs;
+                
+                // Clear loading message
+                document.getElementById('documentTable').innerHTML = '';
+                
+                if (totalDocs === 0) {
+                    document.getElementById('documentTable').innerHTML = 
+                        '<tr><td colspan="4" class="py-4 px-4 text-center text-gray-500">No documents found</td></tr>';
+                    document.getElementById('totalChunks').textContent = '0';
+                } else {
+                    // Add each document to the table
+                    for (const [id, doc] of Object.entries(documents)) {
+                        const chunks = doc.chunks || 0;
+                        totalChunks += chunks;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b border-gray-200">${doc.filename}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">${chunks}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">${formatFileSize(doc.size || 0)}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">${formatDate(doc.date_added || '')}</td>
+                        `;
+                        document.getElementById('documentTable').appendChild(row);
+                    }
+                    
+                    document.getElementById('totalChunks').textContent = totalChunks;
+                }
+                
+            } catch (error) {
+                console.error('Error fetching documents:', error);
+                document.getElementById('totalDocuments').textContent = 'Error';
+                document.getElementById('totalChunks').textContent = 'Error';
+                document.getElementById('documentTable').innerHTML = 
+                    '<tr><td colspan="4" class="py-4 px-4 text-center text-gray-500">Error loading documents</td></tr>';
+            }
+        });
+        
+        // Helper function to update status indicators
+        function updateStatusIndicator(elementId, textElementId, isOk, statusText) {
+            const element = document.getElementById(elementId);
+            const textElement = document.getElementById(textElementId);
+            
+            if (isOk) {
+                element.classList.remove('bg-gray-300', 'bg-red-500');
+                element.classList.add('bg-green-500');
+            } else {
+                element.classList.remove('bg-gray-300', 'bg-green-500');
+                element.classList.add('bg-red-500');
+            }
+            
+            textElement.textContent = statusText;
+        }
+        
+        // Helper function to format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            } catch (e) {
+                return dateString;
+            }
+        }
+    </script>
+</body>
+</html>

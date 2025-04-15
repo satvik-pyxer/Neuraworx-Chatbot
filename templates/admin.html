@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - NeuraWorx DocSight</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjZGRiIgZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3bC0xMC01ek0xMiA0LjRsNi4yIDMuMUwxMiAxMC42IDUuOCA3LjVsMy4xLTEuNiA2LjItMy4xek00IDguN2w3IDMuNXY3LjFsLTctMy41VjguN3ptOSAzLjVsNy0zLjV2Ny4xbC03IDMuNXYtNy4xeiIvPjwvc3ZnPg==">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-bold text-blue-600">NeuraWorx DocSight</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="/admin" class="border-blue-500 text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" aria-current="page">Admin</a>
+                        <a href="/profile" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Profile</a>
+                        <a href="/help" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+
+        <!-- Documents Section -->
+        <div class="bg-white shadow rounded-lg mb-8 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Document Management</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chunks</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="documentTable">
+                        <!-- Document rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Model Information Section -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Model Management</h2>
+            
+            <!-- Current Model Info -->
+            <div class="mb-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Active Model</h3>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-semibold text-blue-800" id="activeModelName">Loading...</h4>
+                            <p class="text-sm text-blue-600 mt-1" id="activeModelDescription">Please wait...</p>
+                        </div>
+                        <div class="text-sm text-blue-600">
+                            <p><span class="font-medium">Size:</span> <span id="activeModelSize">...</span></p>
+                            <p><span class="font-medium">Context Window:</span> <span id="activeModelContext">...</span></p>
+                            <p><span class="font-medium">Path:</span> 
+                                <span class="text-sm text-blue-800">models/</span><span id="activeModelFilename">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Models -->
+            <div class="mb-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Available Models</h3>
+                <div class="grid gap-6" id="modelsList">
+                    <!-- Model cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- System Stats -->
+            <div class="mt-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">System Statistics</h3>
+                <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    <div class="bg-gray-50 px-4 py-5 rounded-lg shadow overflow-hidden sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">Total Documents</dt>
+                        <dd class="mt-1 text-2xl font-semibold text-gray-900" id="totalDocuments">...</dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 rounded-lg shadow overflow-hidden sm:p-6">
+                        <dt class="text-sm font-medium text-gray-500 truncate">Total Chunks</dt>
+                        <dd class="mt-1 text-2xl font-semibold text-gray-900" id="totalChunks">...</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load model information
+        async function loadModelInfo() {
+            try {
+                const response = await fetch('/admin/models');
+                const data = await response.json();
+                
+                // Update active model info
+                const activeModel = data.models.find(m => m.is_active);
+                if (activeModel) {
+                    document.getElementById('activeModelName').textContent = activeModel.name;
+                    document.getElementById('activeModelDescription').textContent = activeModel.description;
+                    document.getElementById('activeModelSize').textContent = formatBytes(activeModel.size_mb * 1024 * 1024);
+                    document.getElementById('activeModelContext').textContent = activeModel.context_window + " tokens";
+                    document.getElementById('activeModelFilename').textContent = activeModel.file_name;
+                }
+                
+                // Populate models list
+                const modelsList = document.getElementById('modelsList');
+                modelsList.innerHTML = '';
+                
+                data.models.forEach(model => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-lg border ' + 
+                                    (model.is_active ? 'border-blue-300' : 'border-gray-200');
+                    
+                    const downloadButton = model.is_downloaded ? 
+                        `<button 
+                            onclick="activateModel('${model.file_name}')"
+                            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors ${model.is_active ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${model.is_active ? 'disabled' : ''}
+                        >
+                            ${model.is_active ? 'Active' : 'Activate'}
+                        </button>` :
+                        `<button 
+                            onclick="downloadModel('${model.file_name}')"
+                            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        >
+                            Download
+                        </button>`;
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${model.name}</h4>
+                                <p class="text-sm text-gray-600 mt-1">${model.description}</p>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <span class="font-medium">Size:</span> ${formatBytes(model.size_mb * 1024 * 1024)} | 
+                                    <span class="font-medium">Quantization:</span> ${model.quantization} | 
+                                    <span class="font-medium">Context:</span> ${model.context_window} tokens
+                                </p>
+                            </div>
+                            <div>
+                                ${downloadButton}
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs ${model.is_downloaded ? 'text-green-600' : 'text-gray-500'}">
+                            ${model.is_downloaded ? '✓ Downloaded' : '◯ Not Downloaded'}
+                        </div>
+                    `;
+                    
+                    modelsList.appendChild(card);
+                });
+                
+            } catch (error) {
+                console.error('Error loading model info:', error);
+            }
+        }
+
+        // Function to activate a model
+        async function activateModel(modelFilename) {
+            try {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Activating...';
+                button.disabled = true;
+                
+                const response = await fetch('/admin/models/activate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ model_filename: modelFilename })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to activate model');
+                }
+
+                // Reload model information
+                await loadModelInfo();
+            } catch (error) {
+                console.error('Error activating model:', error);
+                alert('Failed to activate model. Please try again.');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Function to download a model
+        async function downloadModel(modelFilename) {
+            try {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Downloading...';
+                button.disabled = true;
+                
+                const response = await fetch('/admin/models/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ model_filename: modelFilename })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to download model');
+                }
+
+                // Reload model information
+                await loadModelInfo();
+            } catch (error) {
+                console.error('Error downloading model:', error);
+                alert('Failed to download model. Please try again.');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Function to load document statistics
+        async function loadDocumentStats() {
+            try {
+                const response = await fetch('/documents');
+                const documents = await response.json();
+                
+                // Update document stats
+                const documentTable = document.getElementById('documentTable');
+                documentTable.innerHTML = '';
+                
+                const totalDocs = Object.keys(documents).length;
+                let totalChunks = 0;
+                
+                document.getElementById('totalDocuments').textContent = totalDocs;
+                
+                if (totalDocs === 0) {
+                    documentTable.innerHTML = 
+                        '<tr><td colspan="4" class="py-4 px-4 text-center text-gray-500">No documents found</td></tr>';
+                } else {
+                    // Add each document to the table
+                    for (const [id, doc] of Object.entries(documents)) {
+                        const chunks = doc.chunks || 0;
+                        totalChunks += chunks;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${doc.filename}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatBytes(doc.size || 0)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${chunks}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(doc.date_added || '')}</td>
+                        `;
+                        documentTable.appendChild(row);
+                    }
+                }
+                
+                document.getElementById('totalChunks').textContent = totalChunks;
+            } catch (error) {
+                console.error('Error loading document stats:', error);
+            }
+        }
+
+        // Function to format bytes
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        // Load document statistics and model info on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDocumentStats();
+            loadModelInfo();
+        });
+    </script>
+</body>
+</html>

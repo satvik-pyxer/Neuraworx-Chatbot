@@ -122,6 +122,7 @@ def start_api_server(host, port, reload_option):
     
     logger.info(f"Starting API server at {host}:{port}")
     logger.info(f"API documentation will be available at http://{host}:{port}/docs")
+    logger.info(f"Web interface will be available at http://{host}:{port}/")
     
     # Run the uvicorn server with the api module's app instance
     uvicorn.run(
@@ -142,10 +143,15 @@ def main():
     ingest_parser.add_argument("folder", help="Folder containing documents to ingest")
     
     # API server command
-    api_parser = subparsers.add_parser("serve", help="Start the API server")
+    api_parser = subparsers.add_parser("serve", help="Start the API server with web interface")
     api_parser.add_argument("--host", default="0.0.0.0", help="Host to bind the server to")
     api_parser.add_argument("--port", type=int, default=8000, help="Port to bind the server to")
     api_parser.add_argument("--reload", action="store_true", help="Enable auto-reload for development")
+    
+    # If no arguments are provided, default to serve
+    import sys
+    if len(sys.argv) == 1:
+        sys.argv.append("serve")
     
     args = parser.parse_args()
     

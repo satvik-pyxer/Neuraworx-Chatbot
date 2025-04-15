@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - NeuraWorx DocSight</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjZGRiIgZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3bC0xMC01ek0xMiA0LjRsNi4yIDMuMUwxMiAxMC42IDUuOCA3LjVsMy4xLTEuNiA2LjItMy4xek00IDguN2w3IDMuNXY3LjFsLTctMy41VjguN3ptOSAzLjVsNy0zLjV2Ny4xbC03IDMuNXYtNy4xeiIvPjwvc3ZnPg==">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-bold text-blue-600">NeuraWorx DocSight</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="/admin" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Admin</a>
+                        <a href="/profile" class="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Profile</a>
+                        <a href="/help" class="border-blue-500 text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" aria-current="page">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Help & Documentation</h1>
+
+        <!-- Getting Started Section -->
+        <div class="bg-white shadow rounded-lg mb-8 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Getting Started</h2>
+            <div class="prose prose-blue max-w-none">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">1. Upload Your Documents</h3>
+                <p class="mb-4">
+                    Start by uploading your documents using the "Upload Document" button in the documents panel. 
+                    The system supports PDF, TXT, MD, and DOCX formats. The system will process your document 
+                    and prepare it for question answering.
+                </p>
+
+                <h3 class="text-lg font-medium text-gray-900 mb-2">2. Ask Questions</h3>
+                <p class="mb-4">
+                    Type your question in the input field and click "Ask" or press Enter. 
+                    The AI will analyze your documents and provide relevant answers based on the content.
+                </p>
+
+                <h3 class="text-lg font-medium text-gray-900 mb-2">3. Review Answers and Sources</h3>
+                <p class="mb-4">
+                    The AI will provide an answer along with the sources it used from your documents.
+                    You can review these sources to verify the information.
+                </p>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="bg-white shadow rounded-lg mb-8 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Features</h2>
+            <div class="prose prose-blue max-w-none">
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>RAG Architecture:</strong> Uses Retrieval-Augmented Generation for accurate, document-based answers.</li>
+                    <li><strong>Llama 3.1 Model:</strong> Powered by Meta's Llama 3.1 for high-quality responses.</li>
+                    <li><strong>Document Management:</strong> Easy upload and management of multiple document types.</li>
+                    <li><strong>Conversation History:</strong> Maintains context across multiple questions for more coherent interactions.</li>
+                    <li><strong>Vector Search:</strong> Uses semantic search to find the most relevant information in your documents.</li>
+                    <li><strong>Responsive Design:</strong> Works seamlessly on both desktop and mobile devices.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tips & Tricks Section -->
+        <div class="bg-white shadow rounded-lg mb-8 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Tips & Tricks</h2>
+            <div class="prose prose-blue max-w-none">
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Be Specific:</strong> Ask clear, focused questions for better results.</li>
+                    <li><strong>Context Matters:</strong> The AI can only answer based on the content of your uploaded documents.</li>
+                    <li><strong>Follow-up Questions:</strong> The system remembers previous questions, so you can ask follow-ups without repeating context.</li>
+                    <li><strong>Review Sources:</strong> Always check the source information to verify the AI's answers.</li>
+                    <li><strong>Toggle Panels:</strong> Use the side buttons to hide document and history panels for more space on smaller screens.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Troubleshooting Section -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Troubleshooting</h2>
+            <div class="prose prose-blue max-w-none">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Common Issues</h3>
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="font-medium text-gray-900">Document won't upload</dt>
+                        <dd class="text-gray-600">Ensure your document is not password protected and is in a supported format (PDF, TXT, MD, DOCX).</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium text-gray-900">Slow responses</dt>
+                        <dd class="text-gray-600">Large documents may take longer to process. The first query after uploading a document might be slower as the system indexes the content.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium text-gray-900">Unclear or incorrect answers</dt>
+                        <dd class="text-gray-600">Try rephrasing your question or being more specific. Check if the information you're looking for is actually in your documents.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium text-gray-900">System not starting</dt>
+                        <dd class="text-gray-600">Make sure Docker is running for the vector database (Qdrant) and that you have the required model files in the models directory.</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
